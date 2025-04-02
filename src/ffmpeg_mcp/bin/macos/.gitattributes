@@ -1,0 +1,7 @@
+*.a filter=lfs diff=lfs merge=lfs -text
+arm64/ffmpeg filter=lfs diff=lfs merge=lfs -text
+arm64/ffprobe filter=lfs diff=lfs merge=lfs -text
+arm64/ffplay filter=lfs diff=lfs merge=lfs -text
+x86_64/ffplay filter=lfs diff=lfs merge=lfs -text
+x86_64/ffprobe filter=lfs diff=lfs merge=lfs -text
+x86_64/ffmpeg filter=lfs diff=lfs merge=lfs -text
