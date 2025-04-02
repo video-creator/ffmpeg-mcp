@@ -4,6 +4,7 @@ import sys
 import threading
 import os
 import platform
+import ffmpeg_mcp.utils as utils
 
 def check_os_architecture():
     # 获取当前操作系统
@@ -70,14 +71,45 @@ def run_command(command, timeout=300):
             thread.join()  #
         logs.append(append_msg)
         return return_code, '\n'.join(logs), append_msg
+    
+def is_file_and_exists(file_path):
+    return os.path.isfile(file_path) and os.path.exists(file_path)
+
 def command_dir():
     system,machine = check_os_architecture()
     current_work_dir = os.path.dirname(__file__)
-    if system == "Darwin" and machine == "x86_64":
-        return f"{current_work_dir}/bin/macos/x86_64"
-    if system == "Darwin" and machine == "arm64":
-        return f"{current_work_dir}/bin/macos/arm64"
+    os.chdir(f"{current_work_dir}/bin")
+    if system == "Darwin":
+        if machine == "x86_64":
+            dir = f"{current_work_dir}/bin/ffmpeg-macos-x86_64"
+            url = "https://gitee.com/littlecodergitxxx/ffmpeg-macos-x86_64.git"
+        if machine == "arm64":
+            dir = f"{current_work_dir}/bin/ffmpeg-macos-arm64"
+            url = "https://gitee.com/littlecodergitxxx/ffmpeg-macos-arm64.git"
+        if not is_file_and_exists(f"{dir}/ffmpeg"):
+            cmd = f"rm -rf {dir}"
+            code,_,_ = run_command(cmd)
+            cmd = f"git clone {url}"
+            code,_,_ = run_command(cmd)
+            if code == 0:
+                os.chdir(dir)
+            else:
+                return None
+            cmd = f"git checkout v0.1"
+            code,_,_= run_command(cmd)
+            if code == 0:
+                utils.unzip_to_current_directory(f"ffmpeg.zip")
+            else:
+                return None
+            cmd = f"chmod 777 {dir}/ffmpeg"
+            code,_,_= run_command(cmd)
+            cmd = f"chmod 777 {dir}/ffprobe"
+            code,_,_= run_command(cmd)
+            cmd = f"chmod 777 {dir}/ffplay"
+            code,_,_= run_command(cmd)
+        return dir
     return None
+
 def run_ffmpeg(cmd, timeout=300):
     cmd_dir = command_dir()
     if cmd_dir is None:

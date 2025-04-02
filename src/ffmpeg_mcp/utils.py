@@ -1,5 +1,8 @@
 
 import tempfile
+import zipfile
+import os
+
 def convert_to_seconds(time_input):
     """
     将不同格式的时间表示转换为秒数。
@@ -65,3 +68,12 @@ def create_temp_file() -> str:
     # 关闭文件，以便其他进程或程序可以使用它
     temp_file.close()
     return temp_file_path
+
+def unzip_to_current_directory(zip_file_path):
+    # 获取当前目录路径
+    current_directory = os.getcwd()
+
+    # 打开ZIP文件
+    with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+        # 解压缩到当前目录
+        zip_ref.extractall(current_directory)
