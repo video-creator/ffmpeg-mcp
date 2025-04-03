@@ -5,7 +5,7 @@ import threading
 import os
 import platform
 import ffmpeg_mcp.utils as utils
-
+import ffmpeg_mcp.typedef as typedef
 def check_os_architecture():
     # 获取当前操作系统
     system = platform.system()
@@ -122,8 +122,17 @@ def run_ffmpeg(cmd, timeout=300):
     logs.append(append_msg)
     return code, '\n'.join(logs)
 
-def run_ffprobe(video_path):
-    code, log = run_command(f"ffprobe -show_streams -i{video_path}")
-    if (code == 0):
-        print(log)
+def run_ffprobe(cmd, timeout):
+    cmd_dir = command_dir()
+    if cmd_dir is None:
+        return -1, "Not Support Platform"
+    cmd = f"{cmd_dir}/ffprobe {cmd}"
+    code, log, append_msg = run_command(cmd,timeout)
+    logs = []
+    if (code != 0):
+        logs.append(cmd)
+        logs.append(log)
+        logs.append(append_msg)
+        return code,cmd,'\n'.join(logs)
+    return code, cmd, log
     

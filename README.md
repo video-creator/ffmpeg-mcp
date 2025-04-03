@@ -5,6 +5,8 @@ Using ffmpeg command line to achieve an mcp server, can be very convenient, thro
 The server implements the following tools: <br/>
 - `find_video_path`
   The parameters are directory and file name, file name can be complete, or is not suffixed, recursive search in the directory, return the full path
+- `get_video_info`
+  The parameters are video path, return the video info, linkes duration/fps/codec/width/height.
 - `clip_video`
   The parameter is the file path, start time, end time or duration, and returns the trimmed file path
 - `concat_videos`
