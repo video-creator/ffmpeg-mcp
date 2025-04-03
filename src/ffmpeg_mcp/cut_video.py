@@ -95,15 +95,60 @@ def concat_videos(input_files: List[str], output_path: str = None,
     elif fast == False:
         inputs = []
         filter_str = ""
-        
+        fmt_ctx = ffmpeg.media_format_ctx(input_files[0])
+        if fmt_ctx is None:
+            return -1, f"{input_files[0]} 视频解析失败！！"
+        map = ""
+        if len(fmt_ctx.video_streams) > 0: ## 视频+音频
+            width = fmt_ctx.video_streams[0].width
+            height = fmt_ctx.video_streams[0].height
+            aspect = float(width)/float(height)
+            for i, file in enumerate(input_files):
+                inputs.extend(["-i", file])
+                if i == 0:
+                    filter_str += f"[{i}:v]setsar=1[{i}v];"
+                if i > 0:
+                    tmp_fmt_ctx = ffmpeg.media_format_ctx(file)
+                    if (tmp_fmt_ctx is None):
+                        return -1, f"{input_files[i]} 视频解析失败！！"
+                    if len(tmp_fmt_ctx.video_streams) == 0:
+                        return -1, f"{input_files[i]} 不包含视频流！！"
+                    tmp_width = tmp_fmt_ctx.video_streams[0].width
+                    tmp_height = tmp_fmt_ctx.video_streams[0].height
+                    tmp_aspect = float(tmp_width)/float(tmp_height) 
+                    if tmp_width == width and tmp_height == height:
+                        filter_str += f"[{i}:v]setsar=1[{i}v];"
+                    elif tmp_aspect == aspect:
+                        filter_str += f"[{i}:v]scale={width}:{height},setsar=1[{i}v];"
+                    elif abs(tmp_aspect-aspect) < 0.15: #使用increase
+                        filter_str += f"[{i}:v]scale={width}:{height}:force_original_aspect_ratio=increase,setsar=1,crop=x=(iw-{width})/2:y=({height}-ih)/2:w={width}:h={height},setsar=1[{i}v];"
+                    else:
+                        filter_str += f"[{i}:v]scale={width}:{height}:force_original_aspect_ratio=decrease,setsar=1,pad={width}:{height}:({width}-iw)/2:({height}-ih)/2,setsar=1[{i}v];"  
+            for i, file in enumerate(input_files):
+                if len(fmt_ctx.audio_streams) > 0:
+                    filter_str += f"[{i}v][{i}:a]"
+                else:
+                    filter_str += f"[{i}v]"
+            a = 0
+            map = " -map '[outv]' "
+            out = "[outv]"
+            if len(fmt_ctx.audio_streams) > 0:
+                a = 1
+                map = " -map '[outv]' -map '[outa]' "
+                out = "[outv][outa]"
+            filter_str += f"concat=n={len(input_files)}:v=1:a={a}{out}"
+        elif len(fmt_ctx.audio_streams) > 0: # 音频
+            for i, file in enumerate(input_files):
+                inputs.extend(["-i", file])
+                filter_str += f"[{i}:a]"
+            filter_str += f"concat=n={len(input_files)}:a=1:v=0[outa]"
+            map = " -map '[outa]' "
+            
+        if len(filter_str) == 0:
+            return -1, f"{input_files[0]} 视频中不包含任何音视频流！！"
         # 构建输入参数和滤镜表达式
-        for i, file in enumerate(input_files):
-            inputs.extend(["-i", file])
-            filter_str += f"[{i}:v:0][{i}:a:0]"
-        
-        filter_str += f"concat=n={len(input_files)}:v=1:a=1[outv][outa]"
         inputs_str = " ".join(inputs)
-        cmd = f" {inputs_str} -lavfi '{filter_str}' -map '[outv]' -map '[outa]' -y {output_path}"
+        cmd = f" {inputs_str} -lavfi '{filter_str}' {map} -y {output_path}"
         return ffmpeg.run_ffmpeg(cmd)
     
 

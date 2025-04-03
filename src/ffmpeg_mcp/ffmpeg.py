@@ -122,7 +122,7 @@ def run_ffmpeg(cmd, timeout=300):
     logs.append(append_msg)
     return code, '\n'.join(logs)
 
-def run_ffprobe(cmd, timeout):
+def run_ffprobe(cmd, timeout = 60):
     cmd_dir = command_dir()
     if cmd_dir is None:
         return -1, "Not Support Platform"
@@ -136,3 +136,9 @@ def run_ffprobe(cmd, timeout):
         return code,cmd,'\n'.join(logs)
     return code, cmd, log
     
+def media_format_ctx(path):
+    cmd = f" -show_streams -of json -v error -i {path}"
+    code, cmd, log = run_ffprobe(cmd)
+    if (code == 0):
+        return typedef.FormatContext(log)
+    return None
