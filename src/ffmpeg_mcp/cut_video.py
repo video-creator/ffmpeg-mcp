@@ -105,3 +105,9 @@ def concat_videos(input_files: List[str], output_path: str = None,
         inputs_str = " ".join(inputs)
         cmd = f" {inputs_str} -lavfi '{filter_str}' -map '[outv]' -map '[outa]' -y {output_path}"
         return ffmpeg.run_ffmpeg(cmd)
+    
+
+def get_video_info(video_path: str):
+    cmd = f" -v error -show_streams -of json -i {video_path}"
+    return ffmpeg.run_ffprobe(cmd, timeout=60)
+        

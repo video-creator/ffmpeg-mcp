@@ -13,7 +13,7 @@ def is_none_or_empty(s):
 @mcp.tool()
 def find_video_path(root_path, video_name):
     """
-    递归查找精确匹配文件名的视频文件路径（支持带或不带扩展名）
+    可以查找视频文件路径，查找文件路径，递归查找精确匹配文件名的视频文件路径（支持带或不带扩展名）
     
     参数：
     root_path - 要搜索的根目录
@@ -55,12 +55,6 @@ def find_video_path(root_path, video_name):
         print(f"find_video_path 发生异常{str(e)}")
         return ""
 
-def handle_log(line: str):
-        if "frame=" in line:
-            print("进度更新:", line.strip())
-        elif "error" in line.lower():
-            print("错误信息:", line.strip())
-
 @mcp.tool()
 def clip_video(video_path, start=None, end=None,duration = None, output_path=None,time_out=300):
     """
@@ -84,7 +78,7 @@ def clip_video(video_path, start=None, end=None,duration = None, output_path=Non
 
 @mcp.tool()
 def concat_videos(input_files: List[str], output_path: str = None, 
-                      fast: bool = True) -> None:
+                      fast: bool = True):
     """
     使用FFmpeg拼接多个视频文件
     
@@ -94,7 +88,7 @@ def concat_videos(input_files: List[str], output_path: str = None,
     fast (bool): 拼接方法，可选值："True"（默认，要求所有视频必须具有相同的编码格式、分辨率、帧率等参数）| "False(当不确定合并的视频编码格式、分辨率、帧率等参数是否相同的情况下，这个参数应该是False)"
     
     返回:
-    None
+    执行日志
     
     注意:
     1. 当fast=True时，要求所有视频必须具有相同的编码格式、分辨率、帧率等参数
@@ -102,6 +96,18 @@ def concat_videos(input_files: List[str], output_path: str = None,
     3. 输出文件格式由output_path后缀决定（如.mp4/.mkv）
     """
     return cut_video.concat_videos(input_files,output_path,fast)
+
+@mcp.tool()
+def get_video_info(video_path: str):
+    """
+    获取视频信息，包括时长，帧率，codec等
+    
+    参数:
+    video_path (str): 输入视频文件路径
+    返回:
+    视频详细信息
+    """
+    return cut_video.get_video_info(video_path)
 
 
 def main():
