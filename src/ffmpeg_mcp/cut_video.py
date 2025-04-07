@@ -156,3 +156,23 @@ def get_video_info(video_path: str):
     cmd = f" -v error -show_streams -of json -i {video_path}"
     return ffmpeg.run_ffprobe(cmd, timeout=60)
         
+        
+        
+def video_play(video_path: str, speed, loop):
+    speed = float(speed)
+    loop = int(loop)
+    cmd = f" -loop {loop} "
+    if loop != 0:
+        cmd = f" {cmd} -autoexit"
+    audio_filter_str = ""
+    video_filter_str = ""
+    if (speed != 1):
+        fmt_ctx = ffmpeg.media_format_ctx(video_path)
+        if len(fmt_ctx.audio_streams) > 0:
+            audio_filter_str = f"-af atempo={speed}"
+        if len(fmt_ctx.video_streams) > 0:
+            video_filter_str = f"-vf setpts={1/speed}*PTS"
+    cmd = f" {cmd } {audio_filter_str} {video_filter_str}   -i {video_path}"
+    print(cmd)
+    return ffmpeg.run_ffplay(cmd, timeout=60)
+        

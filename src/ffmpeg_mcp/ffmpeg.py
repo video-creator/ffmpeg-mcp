@@ -135,6 +135,20 @@ def run_ffprobe(cmd, timeout = 60):
         logs.append(append_msg)
         return code,cmd,'\n'.join(logs)
     return code, cmd, log
+
+def run_ffplay(cmd, timeout = 60):
+    cmd_dir = command_dir()
+    if cmd_dir is None:
+        return -1, "Not Support Platform"
+    cmd = f"{cmd_dir}/ffplay {cmd}"
+    code, log, append_msg = run_command(cmd,timeout)
+    logs = []
+    if (code != 0):
+        logs.append(cmd)
+        logs.append(log)
+        logs.append(append_msg)
+        return code,cmd,'\n'.join(logs)
+    return code, cmd, log
     
 def media_format_ctx(path):
     cmd = f" -show_streams -of json -v error -i {path}"

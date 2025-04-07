@@ -85,7 +85,18 @@ def get_video_info(video_path: str):
     """
     return cut_video.get_video_info(video_path)
 
+@mcp.tool()
+def play_video(video_path, speed = 1, loop = 1):
+    """
+    使用 ffplay 播放视频文件，支持mkv,mp4,mov,avi,3gp等等
 
+    参数：
+    video_path(str) - 视频文件的路径。
+    speed(float) - 浮点型,播放速率,建议0.5-2之间。
+    loop(int) - 整形,是否循环播放,1:不循环,播放后就退出,0: 循环播放。
+    """
+    return cut_video.video_play(video_path,speed=speed,loop=loop)
+        
 def main():
     print("Server running")
     mcp.run(transport='stdio')

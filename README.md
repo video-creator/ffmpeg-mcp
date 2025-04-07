@@ -11,6 +11,8 @@ The server implements the following tools: <br/>
   The parameter is the file path, start time, end time or duration, and returns the trimmed file path
 - `concat_videos`
   The parameters are the list of files, the output path, and if the video elements in the list of files, such as width, height, frame rate, etc., are consistent, quick mode synthesis is automatically used
+- `play_video`
+  Play video/audio with ffplay, support many format, like mov/mp4/avi/mkv/3gp, video_path: video path speed: play rate loop: play count
 <br/>
 More features are coming
 
