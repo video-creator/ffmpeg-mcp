@@ -6,54 +6,30 @@ import ffmpeg_mcp.cut_video as cut_video
 # Create an MCP server
 mcp = FastMCP("ffmpeg-mcp")
 
-def is_none_or_empty(s):
-    return s is None or s == ""
-
 # Add an addition tool
 @mcp.tool()
 def find_video_path(root_path, video_name):
     """
     可以查找视频文件路径，查找文件路径，递归查找精确匹配文件名的视频文件路径（支持带或不带扩展名）
-    
     参数：
     root_path - 要搜索的根目录
     video_name - 视频文件名（可以带扩展名，但会忽略扩展名匹配）
-    
     返回：
     首个匹配的视频文件完整路径，找不到时返回空字符串
     """
-    try:
-        VIDEO_EXTS = {'.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv', '.webm', '.ts'}
-        target_stem, target_ext = os.path.splitext(video_name)  # 关键修改：提取主文件名
-        if target_ext and target_ext.lower() not in VIDEO_EXTS:
-            target_stem = f"{target_stem}{target_ext}"
-            target_ext = ""
-        for entry in os.listdir(root_path):
-            current_path = os.path.join(root_path, entry)
-            if os.path.isfile(current_path):
-                stem, ext = os.path.splitext(entry)
-                print(f"--------{stem}")
-                if stem.lower() == target_stem.lower():
-                    if (is_none_or_empty(target_ext) and is_none_or_empty(ext)):
-                        return current_path
-                    if (not is_none_or_empty(target_ext) and not is_none_or_empty(ext)):
-                        if (ext.lower() == target_ext.lower()):
-                            return current_path
-                    if (is_none_or_empty(target_ext) and not is_none_or_empty(ext)):
-                        if (ext.lower() in VIDEO_EXTS):
-                            return current_path
-                    if (not is_none_or_empty(target_ext) and is_none_or_empty(ext)):
-                        return current_path
-                    
-            elif os.path.isdir(current_path):
-            # 递归搜索子目录
-                result = find_video_path(current_path, video_name)
-                if result:
-                    return result
-        return ""
-    except Exception as e:
-        print(f"find_video_path 发生异常{str(e)}")
-        return ""
+    VIDEO_EXTS = {'.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv', '.webm', '.ts'}
+    target_stem, target_ext = os.path.splitext(video_name)
+    if target_ext.lower() not in VIDEO_EXTS:
+        target_stem = f"{target_stem}{target_ext}"
+        target_ext = ""
+
+    for root, dirs, files in os.walk(root_path):
+        for file in files:
+            stem, ext = os.path.splitext(file)
+            if stem.lower() == target_stem.lower():
+                if (not target_ext or ext.lower() in VIDEO_EXTS):
+                    return os.path.join(root, file)
+    return ""
 
 @mcp.tool()
 def clip_video(video_path, start=None, end=None,duration = None, output_path=None,time_out=300):
