@@ -96,6 +96,22 @@ def play_video(video_path, speed = 1, loop = 1):
     loop(int) - 整形,是否循环播放,1:不循环,播放后就退出,0: 循环播放。
     """
     return cut_video.video_play(video_path,speed=speed,loop=loop)
+
+
+@mcp.tool()
+def overlay_video(background_video, overlay_video, output_path: str = None, position: int = 1,  dx = 0, dy = 0):
+    """
+    两个视频叠加，注意不是拼接长度，而是画中画效果
+
+    参数：
+    background_video(str) - 背景视频文件的路径。
+    overlay_video(str) - 前景视频文件路径。
+    output_path(str) - 输出路径
+    position(enum) - 相对位置，TopLeft=1: 左上角,TopCenter=2: 上居中, TopRight=3: 右上角 RightCenter=4: 右居中 BottomRight=5: 右下角 BottomCenter=6: 下居中 BottomLeft=7: 左下角 LeftCenter=8: 左居中 Center=9: 居中
+    dx(int) - 整形,前景视频坐标x偏移值
+    dy(int) - 整形,前景视频坐标y偏移值
+    """
+    return cut_video.overlay_video(background_video, overlay_video, output_path,position, dx, dy)
         
 def main():
     print("Server running")

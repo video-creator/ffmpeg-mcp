@@ -13,6 +13,14 @@ The server implements the following tools: <br/>
   The parameters are the list of files, the output path, and if the video elements in the list of files, such as width, height, frame rate, etc., are consistent, quick mode synthesis is automatically used
 - `play_video`
   Play video/audio with ffplay, support many format, like mov/mp4/avi/mkv/3gp, video_path: video path speed: play rate loop: play count
+- `overlay_video`
+  Two video overlay.
+  background_video: backgroud video path
+  overlay_video: front video path
+  output_path: output video path
+  position: relative location
+  dx: x offset
+  dy: y offset
 <br/>
 More features are coming
 

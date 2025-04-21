@@ -2,7 +2,7 @@ import ffmpeg_mcp.ffmpeg as ffmpeg
 import ffmpeg_mcp.utils as utils
 import os
 from typing import List
-
+from enum import Enum
 
 def clip_video_ffmpeg(video_path, start = None, end = None, duration=None, output_path = None, time_out = 30):
     """
@@ -176,3 +176,74 @@ def video_play(video_path: str, speed, loop):
     print(cmd)
     return ffmpeg.run_ffplay(cmd, timeout=60)
         
+     
+class Position(Enum):
+    TopLeft = 1,
+    TopCenter = 2,
+    TopRight = 3,
+    RightCenter = 4,
+    BottomRight = 5,
+    BottomCenter = 6,
+    BottomLeft = 7,
+    LeftCenter = 8,
+    Center = 9
+           
+def overlay_video(background_video, overlay_video, output_path: str = None, position: int = 1,  dx = 0, dy = 0):
+    """
+    两个视频叠加，注意不是拼接长度，而是画中画效果
+
+    参数：
+    background_video(str) - 背景视频文件的路径。
+    overlay_video(str) - 前景视频文件路径。
+    output_path(str) - 输出路径
+    position(enum) - 相对位置，TopLeft: 左上角,TopCenter: 上居中, TopRight: 右上角 RightCenter: 右居中 BottomRight: 右下角 BottomCenter: 下居中 BottomLeft: 左下角 LeftCenter: 左居中 Center: 居中
+    dx(int) - 整形,前景视频坐标x值
+    dy(int) - 整形,前景视频坐标y值
+    """
+    try:
+        base, ext = os.path.splitext(background_video)
+        if (output_path == None):
+            if (ext == None or len(ext) == 0):
+                ext = ".mp4"
+            output_path = f"{base}_clip{ext}"
+        x = ""
+        y = ""
+        if position == 1:
+            x = f"{dx}"
+            y = f"{dy}"
+        elif position == Position.LeftCenter:
+             x = f"{dx}"
+             y = f"(H-h)/2+{dy}"
+        elif position == 7:
+            x = f"{dx}"
+            y = f"(H-h)+{dy}"
+        elif position == 6:
+            x = f"(W-w)/2+{dx}"
+            y = f"(H-h)+{dy}"
+        elif position == 5:
+            x = f"(W-w)+{dx}"
+            y = f"(H-h)+{dy}"    
+        elif position == 4:
+            x = f"(W-w)+{dx}"
+            y = f"(H-h)/2+{dy}"    
+        elif position == 3:
+            x = f"(W-w)+{dx}"
+            y = f"{dy}"   
+        elif position == 2:
+            x = f"(W-w)/2+{dx}"
+            y = f"{dy}"   
+        elif position == 9:
+            x = f"(W-w)/2+{dx}"
+            y = f"(H-h)/2+{dy}"   
+            
+        cmd = f" -i {background_video} -i {overlay_video} -filter_complex \"[0:v][1:v]overlay=x={x}:y={y}[ov];[0:a][1:a]amix=inputs=2:weights='3 1'[oa]\" -map '[ov]' -map '[oa]'"
+        cmd = f"{cmd} -y {output_path}"
+        print(cmd)
+        status_code, log = ffmpeg.run_ffmpeg(cmd, timeout=1000)
+        print(log)
+        return {status_code, log, output_path}
+    except Exception as e:
+        print(f"剪辑失败: {str(e)}")
+        return {-1, str(e), ""}
+    
+    
