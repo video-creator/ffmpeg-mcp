@@ -247,3 +247,28 @@ def overlay_video(background_video, overlay_video, output_path: str = None, posi
         return {-1, str(e), ""}
     
     
+def scale_video(video_path, width, height = -2,output_path: str = None):
+    """
+    视频缩放
+
+    参数：
+    width(int) - 目标宽度， 如果是-2,代表保持宽高比，且是2的倍数。
+    height(int) - 目标高度，如果是-2,代表保持宽高比，且是2的倍数。
+    output_path(str) - 输出路径
+    """
+    try:
+        base, ext = os.path.splitext(video_path)
+        if (output_path == None):
+            if (ext == None or len(ext) == 0):
+                ext = ".mp4"
+            output_path = f"{base}_clip{ext}"
+    
+        cmd = f" -i {video_path} -filter_complex \"scale={width}:{height}\""
+        cmd = f"{cmd} -y {output_path}"
+        print(cmd)
+        status_code, log = ffmpeg.run_ffmpeg(cmd, timeout=1000)
+        print(log)
+        return {status_code, log, output_path}
+    except Exception as e:
+        print(f"剪辑失败: {str(e)}")
+        return {-1, str(e), ""}

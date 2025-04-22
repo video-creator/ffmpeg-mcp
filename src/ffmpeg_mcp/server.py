@@ -112,7 +112,18 @@ def overlay_video(background_video, overlay_video, output_path: str = None, posi
     dy(int) - 整形,前景视频坐标y偏移值
     """
     return cut_video.overlay_video(background_video, overlay_video, output_path,position, dx, dy)
-        
+       
+@mcp.tool()   
+def scale_video(video_path, width, height,output_path: str = None):
+    """
+    视频缩放
+
+    参数：
+    width(int) - 目标宽度。
+    height(int) - 目标高度。
+    output_path(str) - 输出路径
+    """ 
+    return cut_video.scale_video(video_path, width, height, output_path)
 def main():
     print("Server running")
     mcp.run(transport='stdio')

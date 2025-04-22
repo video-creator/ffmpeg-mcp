@@ -14,13 +14,19 @@ The server implements the following tools: <br/>
 - `play_video`
   Play video/audio with ffplay, support many format, like mov/mp4/avi/mkv/3gp, video_path: video path speed: play rate loop: play count
 - `overlay_video`
-  Two video overlay.
-  background_video: backgroud video path
-  overlay_video: front video path
-  output_path: output video path
-  position: relative location
-  dx: x offset
-  dy: y offset
+  Two video overlay. <br/>
+  background_video: backgroud video path <br/>
+  overlay_video: front video path <br/>
+  output_path: output video path<br/>
+  position: relative location<br/>
+  dx: x offset<br/>
+  dy: y offset<br/>
+- `scale_video`
+  Video scale. <br/>
+  video_path: in video path <br/>
+  width: out video width, -2 keep aspect <br/>
+  height: out video height, -2 keep aspect <br/>
+  output_path: output video path <br/>
 <br/>
 More features are coming
 
