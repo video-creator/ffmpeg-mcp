@@ -1,6 +1,10 @@
 # FFmpeg-MCP
 Using ffmpeg command line to achieve an mcp server, can be very convenient, through the dialogue to achieve the local video search, tailoring, stitching, playback and other functions
 
+<a href="https://glama.ai/mcp/servers/@video-creator/ffmpeg-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@video-creator/ffmpeg-mcp/badge" alt="FFmpeg-Server MCP server" />
+</a>
+
 ## Support Tools
 The server implements the following tools: <br/>
 - `find_video_path`
