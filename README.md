@@ -31,6 +31,14 @@ The server implements the following tools: <br/>
   width: out video width, -2 keep aspect <br/>
   height: out video height, -2 keep aspect <br/>
   output_path: output video path <br/>
+- `extract_frames_from_video`
+  Extract images from a video.<br/>
+  Parameters: <br/>
+  video_path (str): The path to the video.<br/>
+  fps (int): Extract one frame every specified number of seconds. If set to 0, extract all frames; if set to 1, extract one frame per second.<br/>
+  output_folder (str): The directory where the images will be saved.<br/>
+  format (int): The format of the extracted images; 0: PNG, 1: JPG, 2: WEBP.<br/>
+  total_frames (int): The maximum number of frames to extract. If set to 0, there is no limit<br/>
 <br/>
 More features are coming
 

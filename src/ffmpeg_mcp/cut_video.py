@@ -272,3 +272,43 @@ def scale_video(video_path, width, height = -2,output_path: str = None):
     except Exception as e:
         print(f"剪辑失败: {str(e)}")
         return {-1, str(e), ""}
+    
+
+def extract_frames_from_video(video_path,fps=0, output_folder=None, format=0, total_frames=0):
+    """
+    使用 FFmpeg 提取视频中的每一帧图像。
+
+    :param video_path: 视频文件的路径。
+    :param fps: 每多少秒抽一帧，如果传0，代表每一帧都抽
+    :param output_folder: 输出图像的文件夹路径。
+    :param format: 输出图像的图片格式 0：png 1:jpg 2:webp。
+    """
+    # 确保输出文件夹存在
+    if output_folder == None:
+          output_folder = os.path.dirname(video_path)
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+    img_ext = "png"
+    if (format == 0):
+        img_ext = "png"
+    elif (format == 1):
+        img_ext = "jpg"
+    else:
+        img_ext = "webp"
+    output_path = os.path.join(output_folder, f'frame_%04d.{img_ext}')
+    try:
+        cmd = f" -i {video_path}"
+        # 执行 FFmpeg 命令
+        if fps > 0:
+            cmd = f" {cmd} -vf 'fps=1/{fps}'"
+        else:
+            cmd = f" {cmd} -vsync 0"
+        if (total_frames > 0):
+            cmd = f" {cmd} -vframes {total_frames} "
+        cmd = f" {cmd} -y {output_path}"
+        status_code, log = ffmpeg.run_ffmpeg(cmd, timeout=1000)
+        print(log)
+        return {status_code, log, output_path}
+    except Exception as e:
+        print(f"抽取失败: {str(e)}")
+        return {-1, str(e), ""}

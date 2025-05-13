@@ -1,8 +1,14 @@
 # server.py
 import os
+import sys
+cur_path=os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, cur_path+"/..")
 from typing import List
 from mcp.server.fastmcp import FastMCP
 import ffmpeg_mcp.cut_video as cut_video
+
+
+
 # Create an MCP server
 mcp = FastMCP("ffmpeg-mcp")
 
@@ -124,6 +130,21 @@ def scale_video(video_path, width, height,output_path: str = None):
     output_path(str) - 输出路径
     """ 
     return cut_video.scale_video(video_path, width, height, output_path)
+
+@mcp.tool()   
+def extract_frames_from_video(video_path,fps=0, output_folder=None, format=0, total_frames=0):
+    """
+    提取视频中的图像。
+
+    参数：
+    video_path(str) - 视频路径。
+    fps(int) - 每多少秒抽一帧，如果传0，代表全部都抽,传1，代表每一秒抽1帧。
+    output_folder(str) - 把图片输出到哪个目录
+    format(int) - 抽取的图片格式，0：代表png 1:jpg 2:webp
+    total_frames(int) - 最多抽取多少张，0代表不限制
+    """ 
+    return cut_video.extract_frames_from_video(video_path, fps, output_folder, format, total_frames)
+
 def main():
     print("Server running")
     mcp.run(transport='stdio')
